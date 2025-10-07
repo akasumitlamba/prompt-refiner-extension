@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prompt Refiner</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gray-50">
+  <!-- Settings Modal -->
+  <div id="settingsModal" class="modal">
+    <div class="flex items-center justify-center w-full h-full">
+      <div class="bg-white rounded-lg shadow-xl p-6 w-11/12 max-w-md">
+        <h2 class="text-xl font-bold mb-4 text-gray-800">Settings</h2>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Google Gemini API Key</label>
+          <input type="password" id="apiKeyInput" placeholder="Enter your API key" 
+                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <p class="text-xs text-gray-500 mt-1">Get your key from <a href="https://makersuite.google.com/app/apikey" target="_blank" class="text-blue-500 underline">Google AI Studio</a></p>
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Model</label>
+          <select id="modelSelect" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="gemini-2.5-flash">Gemini 2.5 Flash (Fastest, Recommended)</option>
+            <option value="gemini-2.5-pro">Gemini 2.5 Pro (Most Capable)</option>
+          </select>
+          <p class="text-xs text-gray-500 mt-1">
+            <span class="font-medium">Flash:</span> Fast & efficient for most tasks &nbsp;|&nbsp; 
+            <span class="font-medium">Pro:</span> Advanced reasoning & complex tasks
+          </p>
+        </div>
+        <div class="flex justify-end gap-2">
+          <button id="cancelSettings" class="px-4 py-2 text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition">Cancel</button>
+          <button id="saveSettings" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- History Modal -->
+  <div id="historyModal" class="modal">
+    <div class="flex items-center justify-center w-full h-full p-4">
+      <div class="bg-white rounded-lg shadow-xl p-6 w-full h-full overflow-hidden flex flex-col">
+        <h2 class="text-xl font-bold mb-4 text-gray-800">Conversation History</h2>
+        <div id="historyContent" class="flex-1 overflow-y-auto scroll-container space-y-4">
+          <!-- History items will be inserted here -->
+        </div>
+        <div class="mt-4 flex justify-end">
+          <button id="closeHistory" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="flex flex-col h-full">
+    <!-- Header -->
+    <div class="bg-blue-500 text-white p-4 flex justify-between items-center">
+      <h1 class="text-lg font-bold">Prompt Refiner</h1>
+      <button id="settingsBtn" class="p-2 rounded hover:bg-blue-600 transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="bg-white border-b border-gray-200 flex items-center px-2 py-2 gap-1 overflow-x-auto">
+      <div id="tabsContainer" class="flex gap-1 flex-1 overflow-x-auto">
+        <!-- Tabs will be inserted here -->
+      </div>
+      <button id="addTabBtn" class="px-3 py-1 text-blue-500 hover:bg-blue-50 rounded transition flex-shrink-0">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Content Area -->
+    <div class="flex-1 overflow-hidden flex flex-col">
+      <div id="blocksContainer" class="flex-1 overflow-y-auto scroll-container p-4 space-y-3">
+        <!-- Blocks will be inserted here -->
+      </div>
+
+      <!-- Add Block Button -->
+      <div class="p-4 border-t border-gray-200 bg-white">
+        <button id="addBlockBtn" class="w-full py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition">
+          + Add Block
+        </button>
+      </div>
+
+      <!-- Generate & History Buttons -->
+      <div class="p-4 border-t border-gray-200 bg-white flex gap-2">
+        <button id="generateBtn" class="flex-1 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition font-medium">
+          Generate
+        </button>
+        <button id="viewHistoryBtn" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition">
+          History
+        </button>
+      </div>
+
+      <!-- Loading Indicator -->
+      <div id="loadingIndicator" class="hidden p-4 border-t border-gray-200 bg-white flex items-center justify-center">
+        <div class="spinner"></div>
+      </div>
+
+      <!-- Response Area -->
+      <div id="responseArea" class="hidden p-4 border-t border-gray-200 bg-white max-h-48 overflow-y-auto scroll-container">
+        <div class="flex justify-between items-start mb-2">
+          <h3 class="font-medium text-gray-700">Response:</h3>
+          <button id="closeResponse" class="text-gray-400 hover:text-gray-600">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        <div id="responseText" class="text-sm text-gray-600 whitespace-pre-wrap"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
+

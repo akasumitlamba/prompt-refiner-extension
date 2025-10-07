@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "Prompt Refiner",
+  "version": "1.0.0",
+  "description": "A prompt engineering workspace with reusable templates and Gemini API integration",
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://generativelanguage.googleapis.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}
+

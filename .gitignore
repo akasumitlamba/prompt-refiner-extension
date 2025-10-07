@@ -1,0 +1,27 @@
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.log
+
+# Node modules (if any)
+node_modules/
+
+# Build files (if any)
+dist/
+build/
+
+# Package files
+*.zip
+*.crx
+*.pem
+
