@@ -428,45 +428,70 @@ button {
   padding-bottom: 0.625rem;
 }
 
+.py-8 {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
 /* Content Textarea */
 .content-textarea {
   resize: none;
   overflow: hidden;
   min-height: 60px;
+  max-height: 300px;
 }
 
 /* Tab Styles */
-.tab-wrapper {
+.tab-wrapper-bordered {
   display: inline-flex;
-}
-
-.tab {
+  align-items: center;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  overflow: hidden;
+  background-color: #f3f4f6;
   transition: all 0.2s;
-  font-size: 0.875rem;
 }
 
-.tab:hover {
-  background-color: #e5e7eb;
+.tab-wrapper-bordered:hover {
+  border-color: #9ca3af;
 }
 
-.tab.active {
+.tab-wrapper-bordered.active {
   background-color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+.tab-name {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  flex: 1;
+  transition: all 0.2s;
+  color: #374151;
+}
+
+.tab-wrapper-bordered.active .tab-name {
   color: white;
 }
 
-.tab.active:hover {
-  background-color: #2563eb;
+.tab-delete-btn {
+  padding: 0.25rem 0.5rem;
+  color: #6b7280;
+  transition: all 0.2s;
+  border-left: 1px solid #d1d5db;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.tab-delete-btn {
-  color: #6b7280;
-  font-size: 0.75rem;
-  transition: all 0.2s;
+.tab-wrapper-bordered.active .tab-delete-btn {
+  border-left-color: rgba(255, 255, 255, 0.3);
+  color: white;
 }
 
 .tab-delete-btn:hover {
-  background-color: #ef4444 !important;
-  color: white !important;
+  background-color: #ef4444;
+  color: white;
 }
 
 .w-3 {
@@ -748,5 +773,43 @@ button.hover\:bg-gray-200:hover {
 
 .border-t-2 {
   border-top-width: 2px;
+}
+
+/* History Item Styles */
+.history-item {
+  margin-bottom: 0.5rem;
+}
+
+.history-header {
+  transition: background-color 0.2s;
+}
+
+.history-content {
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.chevron-icon {
+  transition: transform 0.2s;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.copy-history-btn {
+  transition: all 0.2s;
 }
 

@@ -119,19 +119,21 @@ function renderTabs() {
   
   state.tabs.forEach(tab => {
     const tabWrapper = document.createElement('div');
-    tabWrapper.className = 'tab-wrapper flex items-center gap-1';
+    tabWrapper.className = `tab-wrapper-bordered ${tab.id === state.activeTabId ? 'active' : ''}`;
     
     const tabElement = document.createElement('div');
-    tabElement.className = `tab px-3 py-1 rounded cursor-pointer flex-1 ${tab.id === state.activeTabId ? 'active' : 'bg-gray-100'}`;
+    tabElement.className = 'tab-name';
     tabElement.textContent = tab.name;
     
     tabElement.addEventListener('click', () => switchTab(tab.id));
     tabElement.addEventListener('dblclick', () => renameTab(tab.id));
     
+    tabWrapper.appendChild(tabElement);
+    
     // Delete button (only show if more than one tab)
     if (state.tabs.length > 1) {
       const deleteBtn = document.createElement('button');
-      deleteBtn.className = 'tab-delete-btn p-1 rounded hover:bg-red-500 hover:text-white transition';
+      deleteBtn.className = 'tab-delete-btn';
       deleteBtn.innerHTML = `
         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -141,10 +143,7 @@ function renderTabs() {
         e.stopPropagation();
         deleteTab(tab.id);
       });
-      tabWrapper.appendChild(tabElement);
       tabWrapper.appendChild(deleteBtn);
-    } else {
-      tabWrapper.appendChild(tabElement);
     }
     
     container.appendChild(tabWrapper);
@@ -612,21 +611,98 @@ function openHistory() {
   const historyContent = document.getElementById('historyContent');
   
   if (activeTab.history.length === 0) {
-    historyContent.innerHTML = '<p class="text-gray-500 text-center">No history yet. Generate some responses to see them here.</p>';
+    historyContent.innerHTML = '<p class="text-gray-500 text-center py-8">No history yet. Generate some responses to see them here.</p>';
   } else {
-    historyContent.innerHTML = activeTab.history.map(item => `
-      <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-        <div class="text-xs text-gray-500 mb-2">${formatTimestamp(item.timestamp)}</div>
-        <div class="mb-3">
-          <div class="font-medium text-sm text-gray-700 mb-1">Prompt:</div>
-          <div class="text-sm text-gray-600 whitespace-pre-wrap bg-white p-2 rounded border border-gray-200">${escapeHtml(item.prompt)}</div>
+    historyContent.innerHTML = activeTab.history.map((item, index) => {
+      // Get first line of prompt as preview
+      const promptPreview = item.prompt.split('\n')[0].substring(0, 80) + (item.prompt.length > 80 ? '...' : '');
+      
+      return `
+        <div class="history-item border border-gray-200 rounded-lg overflow-hidden bg-white">
+          <div class="history-header p-3 cursor-pointer hover:bg-gray-50 flex justify-between items-center" data-history-id="${item.id}">
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span class="text-xs text-gray-500">${formatTimestamp(item.timestamp)}</span>
+              </div>
+              <div class="text-sm text-gray-700 font-medium truncate">${escapeHtml(promptPreview)}</div>
+            </div>
+            <div class="flex items-center gap-2">
+              <svg class="w-5 h-5 text-gray-400 chevron-icon transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="history-content hidden p-4 pt-0 border-t border-gray-100">
+            <div class="mb-4">
+              <div class="flex justify-between items-center mb-2">
+                <div class="font-medium text-sm text-gray-700">Prompt:</div>
+              </div>
+              <div class="text-sm text-gray-600 whitespace-pre-wrap bg-gray-50 p-3 rounded border border-gray-200">${escapeHtml(item.prompt)}</div>
+            </div>
+            <div>
+              <div class="flex justify-between items-center mb-2">
+                <div class="font-medium text-sm text-gray-700">Response:</div>
+                <button class="copy-history-btn text-xs px-2 py-1 text-blue-600 hover:bg-blue-50 rounded flex items-center gap-1" data-response="${escapeHtml(item.response).replace(/"/g, '&quot;')}">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                  </svg>
+                  Copy
+                </button>
+              </div>
+              <div class="text-sm text-gray-600 bg-gray-50 p-3 rounded border border-gray-200 markdown-content">${parseMarkdown(item.response)}</div>
+            </div>
+          </div>
         </div>
-        <div>
-          <div class="font-medium text-sm text-gray-700 mb-1">Response:</div>
-          <div class="text-sm text-gray-600 bg-white p-2 rounded border border-gray-200 markdown-content">${parseMarkdown(item.response)}</div>
-        </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
+    
+    // Add click handlers for accordion
+    document.querySelectorAll('.history-header').forEach(header => {
+      header.addEventListener('click', function() {
+        const content = this.nextElementSibling;
+        const chevron = this.querySelector('.chevron-icon');
+        const isOpen = !content.classList.contains('hidden');
+        
+        if (isOpen) {
+          content.classList.add('hidden');
+          chevron.style.transform = 'rotate(0deg)';
+        } else {
+          content.classList.remove('hidden');
+          chevron.style.transform = 'rotate(180deg)';
+        }
+      });
+    });
+    
+    // Add copy handlers
+    document.querySelectorAll('.copy-history-btn').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const responseText = this.getAttribute('data-response');
+        // Decode HTML entities
+        const textarea = document.createElement('textarea');
+        textarea.innerHTML = responseText;
+        const decodedText = textarea.value;
+        
+        navigator.clipboard.writeText(decodedText).then(() => {
+          const originalHTML = this.innerHTML;
+          this.innerHTML = `
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            Copied!
+          `;
+          this.classList.add('text-green-600');
+          
+          setTimeout(() => {
+            this.innerHTML = originalHTML;
+            this.classList.remove('text-green-600');
+          }, 2000);
+        });
+      });
+    });
   }
   
   document.getElementById('historyModal').classList.add('active');
