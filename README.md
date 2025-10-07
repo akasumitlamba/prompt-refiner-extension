@@ -1,8 +1,10 @@
 # Prompt Refiner - Chrome Extension
 
-A powerful prompt engineering workspace that helps you create, manage, and test reusable prompt templates with Google Gemini AI.
+A powerful prompt engineering workspace that helps you create, manage, and test reusable prompt templates with Google Gemini AI. Works as a Chrome sidebar for easy access while browsing.
 
 ## Features
+
+🎨 **Sidebar Interface** - Works as a Chrome sidebar for easy access alongside your browsing
 
 ✨ **API Key Management** - Securely store your Google Gemini API key locally
 
@@ -32,9 +34,13 @@ A powerful prompt engineering workspace that helps you create, manage, and test 
    - Click "Load unpacked"
    - Select the folder containing this extension (`AI enhancer`)
 
-3. **Configure API Key & Model**
-   - Click the extension icon in your Chrome toolbar
-   - Click the settings icon (⚙️) in the top-right
+3. **Open the Sidebar**
+   - Click the extension icon in your Chrome toolbar to open the sidebar
+   - Or right-click the extension icon and select "Open side panel"
+   - The sidebar will appear on the right side of your browser
+
+4. **Configure API Key & Model**
+   - In the sidebar, click the settings icon (⚙️) in the top-right
    - Paste your Google Gemini API key
    - Select your preferred model:
      - **Gemini 2.5 Flash** (Fastest, recommended for most use cases)
@@ -74,7 +80,8 @@ A powerful prompt engineering workspace that helps you create, manage, and test 
 ```
 AI enhancer/
 ├── manifest.json       # Extension configuration
-├── popup.html         # Main UI
+├── background.js      # Background service worker
+├── popup.html         # Main UI (sidebar)
 ├── popup.js           # Application logic
 ├── styles.css         # Custom styling
 ├── icon16.png         # Extension icon (16x16)
@@ -86,7 +93,8 @@ AI enhancer/
 ## Technical Details
 
 - **Manifest Version:** V3
-- **Permissions:** `storage`, `https://generativelanguage.googleapis.com/*`
+- **Extension Type:** Side Panel (Sidebar)
+- **Permissions:** `storage`, `sidePanel`, `https://generativelanguage.googleapis.com/*`
 - **Styling:** Custom CSS (CSP-compliant)
 - **Storage:** chrome.storage.local (all data persists locally)
 - **Supported Models:** 

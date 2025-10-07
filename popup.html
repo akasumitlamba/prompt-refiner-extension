@@ -55,10 +55,10 @@
   <!-- Main Container -->
   <div class="flex flex-col h-full">
     <!-- Header -->
-    <div class="bg-blue-500 text-white p-4 flex justify-between items-center">
-      <h1 class="text-lg font-bold">Prompt Refiner</h1>
-      <button id="settingsBtn" class="p-2 rounded hover:bg-blue-600 transition">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="bg-blue-500 text-white px-3 py-2 flex justify-between items-center">
+      <h1 class="text-base font-bold">Prompt Refiner</h1>
+      <button id="settingsBtn" class="p-1.5 rounded hover:bg-blue-600 transition">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
         </svg>
@@ -66,56 +66,81 @@
     </div>
 
     <!-- Tabs -->
-    <div class="bg-white border-b border-gray-200 flex items-center px-2 py-2 gap-1 overflow-x-auto">
+    <div class="bg-white border-b border-gray-200 flex items-center px-2 py-1.5 gap-1 overflow-x-auto">
       <div id="tabsContainer" class="flex gap-1 flex-1 overflow-x-auto">
         <!-- Tabs will be inserted here -->
       </div>
-      <button id="addTabBtn" class="px-3 py-1 text-blue-500 hover:bg-blue-50 rounded transition flex-shrink-0">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <button id="addTabBtn" class="px-2 py-1 text-blue-500 hover:bg-blue-50 rounded transition flex-shrink-0">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
         </svg>
       </button>
     </div>
 
     <!-- Content Area -->
-    <div class="flex-1 overflow-hidden flex flex-col">
-      <div id="blocksContainer" class="flex-1 overflow-y-auto scroll-container p-4 space-y-3">
+    <div id="mainContent" class="flex-1 overflow-hidden flex flex-col">
+      <div id="blocksContainer" class="flex-1 overflow-y-auto scroll-container p-3 space-y-3">
         <!-- Blocks will be inserted here -->
       </div>
 
-      <!-- Add Block Button -->
-      <div class="p-4 border-t border-gray-200 bg-white">
-        <button id="addBlockBtn" class="w-full py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition">
-          + Add Block
-        </button>
-      </div>
-
-      <!-- Generate & History Buttons -->
-      <div class="p-4 border-t border-gray-200 bg-white flex gap-2">
-        <button id="generateBtn" class="flex-1 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition font-medium">
-          Generate
-        </button>
-        <button id="viewHistoryBtn" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition">
-          History
-        </button>
-      </div>
-
-      <!-- Loading Indicator -->
-      <div id="loadingIndicator" class="hidden p-4 border-t border-gray-200 bg-white flex items-center justify-center">
-        <div class="spinner"></div>
+      <!-- Action Buttons Row -->
+      <div class="p-3 border-t border-gray-200 bg-white">
+        <div class="flex gap-2">
+          <button id="addBlockBtn" class="flex-1 py-2.5 bg-green-500 text-white rounded-md hover:bg-green-600 transition text-sm font-medium flex items-center justify-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            <span>Add</span>
+          </button>
+          <button id="generateBtn" class="flex-grow-3 py-2.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition text-sm font-medium flex items-center justify-center gap-1.5">
+            <svg id="generateIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+            </svg>
+            <svg id="loadingIcon" class="w-4 h-4 hidden spinner-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+            <span id="generateText">Generate</span>
+          </button>
+          <button id="viewHistoryBtn" class="flex-1 py-2.5 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition text-sm font-medium flex items-center justify-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>History</span>
+          </button>
+        </div>
       </div>
 
       <!-- Response Area -->
-      <div id="responseArea" class="hidden p-4 border-t border-gray-200 bg-white max-h-48 overflow-y-auto scroll-container">
-        <div class="flex justify-between items-start mb-2">
-          <h3 class="font-medium text-gray-700">Response:</h3>
-          <button id="closeResponse" class="text-gray-400 hover:text-gray-600">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      <div id="responseArea" class="hidden border-t-2 border-blue-500 bg-white overflow-hidden flex flex-col" style="max-height: 50vh;">
+        <div class="bg-blue-50 px-3 py-2 flex justify-between items-center border-b border-blue-200">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
             </svg>
+            <h3 class="font-medium text-sm text-blue-900">AI Response</h3>
+          </div>
+          <div class="flex gap-1">
+            <button id="copyResponse" class="p-1.5 text-blue-600 hover:bg-blue-100 rounded transition" title="Copy response">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+              </svg>
+            </button>
+            <button id="closeResponse" class="p-1.5 text-blue-600 hover:bg-blue-100 rounded transition" title="Close response">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div id="responseText" class="flex-1 overflow-y-auto scroll-container p-4 text-sm text-gray-700 markdown-content"></div>
+        <div class="p-3 border-t border-gray-200 bg-gray-50">
+          <button id="generateAgainBtn" class="w-full py-2.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition text-sm font-medium flex items-center justify-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+            <span>Generate Again</span>
           </button>
         </div>
-        <div id="responseText" class="text-sm text-gray-600 whitespace-pre-wrap"></div>
       </div>
     </div>
   </div>

@@ -97,9 +97,11 @@ function initializeEventListeners() {
   
   // Generate & History
   document.getElementById('generateBtn').addEventListener('click', generateResponse);
+  document.getElementById('generateAgainBtn').addEventListener('click', generateResponse);
   document.getElementById('viewHistoryBtn').addEventListener('click', openHistory);
   document.getElementById('closeHistory').addEventListener('click', closeHistory);
   document.getElementById('closeResponse').addEventListener('click', closeResponse);
+  document.getElementById('copyResponse').addEventListener('click', copyResponse);
 }
 
 // ============================================
@@ -182,22 +184,27 @@ function createBlockElement(block, index) {
   
   div.innerHTML = `
     <div class="flex items-center justify-between mb-2">
-      <div class="flex items-center gap-2">
-        <svg class="w-5 h-5 text-gray-400 cursor-move" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="flex items-center gap-2 flex-1">
+        <svg class="w-4 h-4 text-gray-400 cursor-move flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
         </svg>
+        <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+        </svg>
         <input type="text" value="${escapeHtml(block.heading)}" 
-               class="heading-input font-medium text-gray-700 border-b border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none px-1"
+               class="heading-input font-medium text-gray-700 border-b border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none px-1 flex-1"
                placeholder="Heading">
       </div>
-      <button class="delete-btn p-1 text-red-500 hover:bg-red-100 rounded transition">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <button class="delete-btn p-1.5 text-red-500 hover:bg-red-100 rounded transition" title="Delete block">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
         </svg>
       </button>
     </div>
-    <textarea class="content-textarea w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" 
-              placeholder="Content">${escapeHtml(block.content)}</textarea>
+    <div class="relative">
+      <textarea class="content-textarea w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" 
+                placeholder="Enter your content here...">${escapeHtml(block.content)}</textarea>
+    </div>
   `;
   
   // Event listeners for inputs
@@ -448,9 +455,17 @@ async function generateResponse() {
     return;
   }
   
-  // Show loading
-  document.getElementById('generateBtn').classList.add('hidden');
-  document.getElementById('loadingIndicator').classList.remove('hidden');
+  // Show loading state
+  const generateBtn = document.getElementById('generateBtn');
+  const generateIcon = document.getElementById('generateIcon');
+  const loadingIcon = document.getElementById('loadingIcon');
+  const generateText = document.getElementById('generateText');
+  
+  generateBtn.disabled = true;
+  generateBtn.classList.add('opacity-75', 'cursor-not-allowed');
+  generateIcon.classList.add('hidden');
+  loadingIcon.classList.remove('hidden');
+  generateText.textContent = 'Generating...';
   document.getElementById('responseArea').classList.add('hidden');
   
   try {
@@ -501,19 +516,89 @@ async function generateResponse() {
   } catch (error) {
     alert(`Error generating response: ${error.message}`);
   } finally {
-    // Hide loading
-    document.getElementById('generateBtn').classList.remove('hidden');
-    document.getElementById('loadingIndicator').classList.add('hidden');
+    // Hide loading state
+    generateBtn.disabled = false;
+    generateBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+    generateIcon.classList.remove('hidden');
+    loadingIcon.classList.add('hidden');
+    generateText.textContent = 'Generate';
   }
 }
 
 function displayResponse(response) {
-  document.getElementById('responseText').textContent = response;
+  const responseText = document.getElementById('responseText');
+  responseText.innerHTML = parseMarkdown(response);
   document.getElementById('responseArea').classList.remove('hidden');
+}
+
+function parseMarkdown(text) {
+  // Escape HTML first
+  let html = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+  
+  // Parse markdown
+  // Bold: **text** or __text__
+  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/__(.+?)__/g, '<strong>$1</strong>');
+  
+  // Italic: *text* or _text_
+  html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+  html = html.replace(/_(.+?)_/g, '<em>$1</em>');
+  
+  // Code blocks: ```code```
+  html = html.replace(/```([^`]+)```/g, '<pre><code>$1</code></pre>');
+  
+  // Inline code: `code`
+  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+  
+  // Headings
+  html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+  html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+  html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+  
+  // Lists
+  html = html.replace(/^\* (.+)$/gm, '<li>$1</li>');
+  html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
+  html = html.replace(/^(\d+)\. (.+)$/gm, '<li>$2</li>');
+  
+  // Wrap consecutive <li> in <ul>
+  html = html.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
+  
+  // Line breaks
+  html = html.replace(/\n\n/g, '<br><br>');
+  html = html.replace(/\n/g, '<br>');
+  
+  return html;
 }
 
 function closeResponse() {
   document.getElementById('responseArea').classList.add('hidden');
+}
+
+function copyResponse() {
+  const responseText = document.getElementById('responseText');
+  const textContent = responseText.innerText;
+  
+  navigator.clipboard.writeText(textContent).then(() => {
+    // Show feedback
+    const copyBtn = document.getElementById('copyResponse');
+    const originalHTML = copyBtn.innerHTML;
+    copyBtn.innerHTML = `
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+      </svg>
+    `;
+    copyBtn.classList.add('text-green-600');
+    
+    setTimeout(() => {
+      copyBtn.innerHTML = originalHTML;
+      copyBtn.classList.remove('text-green-600');
+    }, 2000);
+  }).catch(err => {
+    alert('Failed to copy response');
+  });
 }
 
 // ============================================
@@ -538,7 +623,7 @@ function openHistory() {
         </div>
         <div>
           <div class="font-medium text-sm text-gray-700 mb-1">Response:</div>
-          <div class="text-sm text-gray-600 whitespace-pre-wrap bg-white p-2 rounded border border-gray-200">${escapeHtml(item.response)}</div>
+          <div class="text-sm text-gray-600 bg-white p-2 rounded border border-gray-200 markdown-content">${parseMarkdown(item.response)}</div>
         </div>
       </div>
     `).join('');
