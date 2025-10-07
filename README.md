@@ -78,7 +78,7 @@ A powerful prompt engineering workspace that helps you create, manage, and test 
 ## File Structure
 
 ```
-AI enhancer/
+prompt-refiner-extension/
 ├── manifest.json       # Extension configuration
 ├── background.js      # Background service worker
 ├── popup.html         # Main UI (sidebar)
