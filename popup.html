@@ -85,8 +85,8 @@
     </div>
 
     <!-- Content Area -->
-    <div id="mainContent" class="flex-1 overflow-hidden flex flex-col">
-      <div id="blocksContainer" class="flex-1 overflow-y-auto scroll-container p-3 space-y-3">
+    <div id="mainContent" class="flex-1 overflow-y-auto scroll-container flex flex-col">
+      <div id="blocksContainer" class="p-3 space-y-3">
         <!-- Blocks will be inserted here -->
       </div>
 
@@ -118,7 +118,7 @@
       </div>
 
       <!-- Response Area -->
-      <div id="responseArea" class="hidden border-t-2 border-blue-500 bg-white overflow-hidden flex flex-col mt-2" style="max-height: 50vh;">
+      <div id="responseArea" class="hidden border-t-2 border-blue-500 bg-white flex flex-col mt-2">
         <div class="bg-blue-50 px-3 py-2 flex justify-between items-center border-b border-blue-200">
           <div class="flex items-center gap-2">
             <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -139,7 +139,7 @@
             </button>
           </div>
         </div>
-        <div id="responseText" class="flex-1 overflow-y-auto scroll-container p-4 text-sm text-gray-700 markdown-content"></div>
+        <div id="responseText" class="p-4 text-sm text-gray-700 markdown-content"></div>
         <div class="p-3 border-t border-gray-200 bg-gray-50">
           <button id="generateAgainBtn" class="w-full py-2.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition text-sm font-medium flex items-center justify-center gap-1.5">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
