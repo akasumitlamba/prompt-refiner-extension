@@ -43,8 +43,8 @@ async function loadState() {
             name: 'Tab 1',
             blocks: [{
               id: generateId(),
-              heading: 'Role',
-              content: 'You are a helpful assistant.'
+              heading: '',
+              content: ''
             }],
             history: []
           }],
@@ -59,6 +59,24 @@ async function loadState() {
       // Ensure darkMode exists
       if (state.darkMode === undefined) {
         state.darkMode = false;
+      }
+
+      // Migration: remove preloaded default texts from existing tabs
+      let migrated = false;
+      state.tabs.forEach(tab => {
+        tab.blocks.forEach(block => {
+          if (block.content === 'You are a helpful assistant.') {
+            block.content = '';
+            migrated = true;
+          }
+          if (block.heading === 'Role' || block.heading === 'Heading') {
+            block.heading = '';
+            migrated = true;
+          }
+        });
+      });
+      if (migrated) {
+        chrome.storage.local.set({ promptRefinerState: state }, () => {});
       }
       resolve();
     });
@@ -303,8 +321,8 @@ function addTab() {
     name: `Tab ${tabNumber}`,
     blocks: [{
       id: generateId(),
-      heading: 'Role',
-      content: 'You are a helpful assistant.'
+      heading: '',
+      content: ''
     }],
     history: []
   };
@@ -345,9 +363,13 @@ function deleteTab(tabId) {
   
   const tab = state.tabs[tabIndex];
   
-  // Confirm deletion
-  if (!confirm(`Delete tab "${tab.name}"? This will remove all blocks and history.`)) {
-    return;
+  // If tab has user data (non-empty heading/content or history), ask confirmation; else delete silently
+  const hasUserBlocks = tab.blocks.some(b => (b.heading && b.heading.trim()) || (b.content && b.content.trim()));
+  const hasHistory = (tab.history && tab.history.length > 0);
+  if (hasUserBlocks || hasHistory) {
+    if (!confirm(`Delete tab "${tab.name}"? This will remove all blocks and history.`)) {
+      return;
+    }
   }
   
   // Remove the tab
