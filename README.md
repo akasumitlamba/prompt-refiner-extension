@@ -1,6 +1,6 @@
 # Prompt Refiner - Chrome Extension
 
-# Project Suspended indefinitely
+# -->Project Suspended indefinitely<--
 
 
 A powerful prompt engineering workspace that helps you create, manage, and test reusable prompt templates with Google Gemini AI. Works as a Chrome sidebar for easy access while browsing.
